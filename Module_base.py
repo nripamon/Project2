@@ -25,7 +25,7 @@ class Sigmoid(Module):
     return self.output
 
   def backward(self, gradwrtoutput):
-    self.gradwrtinput = 1+np.exp(-self.output)*gradwrtoutput
+    self.gradwrtinput = self.output*(1-self.output)*gradwrtoutput
     return self.gradwrtinput
 
   def update_param(self,eta):
@@ -116,11 +116,11 @@ class LossMSE(Module):
   def forward(self, predicted, true):
     self.diff = predicted - true
     # loss = torch.sum(torch.pow(self.diff,2),1)
-    loss = torch.mean(torch.pow(self.diff,2))
+    loss = 0.5*torch.mean(torch.pow(self.diff,2))
     return loss 
 
   def backward(self):
-    self.gradwrtinput = 2*self.diff
+    self.gradwrtinput = self.diff
     return self.gradwrtinput
 
   def update_param(self,eta):

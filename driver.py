@@ -17,18 +17,14 @@ and as Loss function we consider the MSE error.
 """
 Set the dimensions of the artificial train and test sets.
 """
-nb_train_input = 1000
-nb_test_input = 400
-
-number_of_classes = 2
+# nb_train_input = 1000
+# nb_test_input = 400
 
 """
 Initialize train and test sets
 """
 option = 2 # 0 for linear and 1 for circle and 2 for circle "projected" 
-train_input, train_target, test_input, test_target, number_of_inputs = init.initialize_dataset(option=option,
-                                                                        nb_train_input=nb_train_input,
-                                                                        nb_test_input=nb_test_input)
+train_input, train_target, test_input, test_target, number_of_inputs, number_of_classes, nb_train_input, nb_test_input = init.initialize_dataset(option=option)
 
 
 """
@@ -36,7 +32,7 @@ Create List of Modules.
 This list is then given as input to the constructor of the NN.
 A loss function has to be provided separately.
 """
-hidden_layer_1, hidden_layer_2, hidden_layer_3 = 25, 25, 25
+hidden_layer_1, hidden_layer_2, hidden_layer_3 = 30, 30, 30
 # 1) Define the modules that are used in the network.
 #.   N.B. Each operator that we are goind to use in the network is
 #.   considered as a module and hence has to be defined.
@@ -85,7 +81,7 @@ output_operator = 5
 
 
 
-eta = 0.01
+eta = 0.05
 
 
 
@@ -99,9 +95,9 @@ NN = M.Sequential(operators,connectivity,input_operators,output_operator,loss,op
 """
 Set the number of epochs
 """
-nb_epochs = 2000
-mini_batch_size = int(nb_train_input*0.3)
-timestep = 10 # how many times we print the forward full batch
+nb_epochs = 1000
+mini_batch_size_inital = int(nb_train_input*0.05)
+timestep = 1 # how many times we print the forward full batch
 
 
 
@@ -116,15 +112,21 @@ for k in range(0, nb_epochs):
        wrt the weights and biases.
     4) Update the weights and biases.
     """
+    mini_batch_size = mini_batch_size_inital
+    shuffle_indexes_minibatch = torch.randperm(train_input.size(0))
+    train_input = train_input[shuffle_indexes_minibatch]
+    train_target = train_target[shuffle_indexes_minibatch] # question - why not long?
 
-    shuffle_indexes_minibatch = torch.randperm(train_input.size(0))[0:mini_batch_size]
-    train_input_minibatch = train_input[shuffle_indexes_minibatch]
-    train_target_minibatch = train_target[shuffle_indexes_minibatch] # question - why not long?
+    for e in range(0, nb_train_input, mini_batch_size):
 
-    train_prediction = NN.forward(train_input_minibatch) 
-    loss_output = NN.loss.forward(train_prediction,train_target_minibatch)
-    NN.backward(train_prediction)
-    NN.update_param()
+      mini_batch_size = min(mini_batch_size, nb_train_input - e)
+      train_input_minibatch = train_input.narrow(0, e, mini_batch_size)
+      train_target_minibatch = train_target.narrow(0, e, mini_batch_size)
+
+      train_prediction = NN.forward(train_input_minibatch) 
+      loss_output = NN.loss.forward(train_prediction,train_target_minibatch)
+      NN.backward(train_prediction)
+      NN.update_param()
     """
     After the training, we compute the number of 
     samples, in the training, that have been correctly
@@ -142,13 +144,15 @@ for k in range(0, nb_epochs):
       train_prediction_batch = NN.forward(train_input) 
       loss_output = NN.loss.forward(train_prediction_batch,train_target)
 
-      nb_train_errors = sum(abs(train_target.max(1)[1] - train_prediction_batch.max(1)[1]))
-
+      # nb_train_errors = sum(abs(train_target.max(1)[1] - train_prediction_batch.max(1)[1]))
+      nb_train_errors = np.linalg.norm(torch.argmax(train_target,dim=1)-torch.argmax(train_prediction_batch,dim=1),ord=0)
       """
       Check the accuracy of the trained model
       """
       test_prediction_batch = NN.forward(test_input) 
-      nb_test_errors = sum(abs(test_target.max(1)[1] - test_prediction_batch.max(1)[1]))
+      # nb_test_errors = sum(abs(test_target.max(1)[1] - test_prediction_batch.max(1)[1]))
+      nb_test_errors = np.linalg.norm(torch.argmax(test_target,dim=1)-torch.argmax(test_prediction_batch,dim=1),ord=0)
+
     
       print('{:d} loss: {:.02f} acc_train_error {:.02f}% test_error {:.02f}%'
           .format(k,loss_output,

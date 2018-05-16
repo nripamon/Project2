@@ -1,15 +1,19 @@
 import torch
 import numpy as np
+from torchvision import datasets
 
 import matplotlib.pyplot as plt
 
-def initialize_dataset(option,nb_train_input,nb_test_input):
+def initialize_dataset(option):
     number_of_classes = 2 
     
 
     if option == 0: 
 
         number_of_inputs = 2
+        number_of_classes = 2
+        nb_train_input = 1000
+        nb_test_input = 200
         # We identify the target line by means of its slope and intercept.
         intercept = 0
         slope = 4
@@ -40,6 +44,9 @@ def initialize_dataset(option,nb_train_input,nb_test_input):
     elif option==1:
 
         number_of_inputs = 2
+        number_of_classes = 2
+        nb_train_input = 1000
+        nb_test_input = 200
         """
         Initialize train and test sets
         Given that the loss function reaches 1 and 0 asyntotically, 
@@ -72,6 +79,9 @@ def initialize_dataset(option,nb_train_input,nb_test_input):
 
     elif option==2:
         number_of_inputs = 3
+        number_of_classes = 2
+        nb_train_input = 1000
+        nb_test_input = 200
         """
         Initialize train and test sets
         Given that the loss function reaches 1 and 0 asyntotically, 
@@ -107,8 +117,28 @@ def initialize_dataset(option,nb_train_input,nb_test_input):
                 test_target[i,0] = 1
                 test_target[i,1] = 0
 
+    elif option==3:
+        mnist_train_set = datasets.MNIST('MNIST/', train = True, download = True)
+        mnist_test_set = datasets.MNIST('MNIST/', train = False, download = True)
 
-    return train_input, train_target, test_input, test_target, number_of_inputs
+        number_of_inputs = 28*28
+        number_of_classes = 10
+        nb_train_input = 60000
+        nb_test_input = 10000
+        # train_input = mnist_train_set.train_data.view(-1, 1, 28, 28).float()
+        train_input = mnist_train_set.train_data.view(nb_train_input, 28*28).float()
+        train_target_regr = mnist_train_set.train_labels
+        train_target = torch.zeros(nb_train_input,10)
+        for i in range(nb_train_input):
+        	train_target[i,train_target_regr[i]] = 1
+        test_input = mnist_test_set.test_data.view(nb_test_input, 28*28).float()
+        test_target_regr = mnist_test_set.test_labels
+        test_target = torch.zeros(nb_test_input,10)
+        for i in range(nb_test_input):
+        	test_target[i,test_target_regr[i]] = 1
+
+
+    return train_input, train_target, test_input, test_target, number_of_inputs, number_of_classes, nb_train_input, nb_test_input
 
 
 def plot_results(option,nb_train_input,train_input, train_target,train_prediction, nb_test_input,test_input, test_target, test_prediction):
