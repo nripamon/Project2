@@ -14,7 +14,7 @@ class Module(object):
   def backward(self, gradwrtoutput):
     raise NotImplementedError
 
-  def param(self, eta):
+  def update_param(self, eta):
       return []
 
 class Sigmoid(Module):
@@ -28,7 +28,7 @@ class Sigmoid(Module):
     self.gradwrtinput = 1+np.exp(-self.output)*gradwrtoutput
     return self.gradwrtinput
 
-  def param(self,eta):
+  def update_param(self,eta):
       return []
 
 class Tanh(Module):
@@ -42,7 +42,7 @@ class Tanh(Module):
     self.gradwrtinput = (1-np.square(np.tanh(self.output)))*gradwrtoutput
     return self.gradwrtinput
 
-  def param(self,eta):
+  def update_param(self,eta):
       return []  
 
 class ReLu(Module):
@@ -59,7 +59,7 @@ class ReLu(Module):
     self.gradwrtinput = self.gradwrtinput*gradwrtoutput
     return self.gradwrtinput
 
-  def param(self,eta):
+  def update_param(self,eta):
     return [] 
 
 class Sum(Module):
@@ -74,7 +74,7 @@ class Sum(Module):
     self.gradwrtinput = 0.5*gradwrtoutput
     return self.gradwrtinput
 
-  def param(self,eta):
+  def update_param(self,eta):
     return []
 
 
@@ -104,7 +104,7 @@ class Linear(Module):
     self.gradwrtbias = torch.sum(gradwrtoutput,0)/self.input.size(0)
     return self.gradwrtinput
 
-  def param(self,eta):
+  def update_param(self,eta):
       # Update the parameters
       self.weights = self.weights-eta*self.gradwrtweights
       self.bias = self.bias-eta*self.gradwrtbias
@@ -123,17 +123,18 @@ class LossMSE(Module):
     self.gradwrtinput = 2*self.diff
     return self.gradwrtinput
 
-  def param(self,eta):
+  def update_param(self,eta):
     return []
 
 
 class Sequential(Module):
 
-  def __init__(self,operators,connectivity,input_operators,output_operator,loss,eta):
+  def __init__(self,operators,connectivity,input_operators,output_operator,loss,optim):
     self.operators = operators
     self.connectivity = connectivity
     self.input_operators = input_operators
     self.output_operator = output_operator
+    self.optim = optim
 
     self.connectivity_backward = OrderedDict(reversed(list(self.connectivity.items())))
     
@@ -147,10 +148,7 @@ class Sequential(Module):
         self.connectivity_forward[i] = tp_forward
     self.connectivity_forward = OrderedDict(self.connectivity_forward)
    
-    print(connectivity)
-    print(self.connectivity_forward)
-    print(self.connectivity_backward)
-    asdas
+    
     # print(self.connectivity)
     # print(self.connectivity_backward)
     # print(self.connectivity_forward)
@@ -161,7 +159,7 @@ class Sequential(Module):
 
 
     self.loss = loss
-    self.eta = eta
+
 
   def forward(self, input):
     """
@@ -197,9 +195,10 @@ class Sequential(Module):
     # input()
     return []
 
-  def param(self):
+  def update_param(self):
     for key,value in self.operators.items():
-      value.param(self.eta)
+      #value.param(self.eta)
+      self.optim.step(value)
     return []
 
 
