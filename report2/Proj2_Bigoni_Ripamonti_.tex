@@ -72,10 +72,12 @@
 \section{Introduction}
 The goal of this project consists in designing a mini deep learning network frameworks ``by scratch''. 
 We have therefore built a network that combines fully connected layers, Tanh, the logistic sigmoid and ReLu. 
-Moreover, we have implemented a forward and backward pass as well as the update of parameters using the stochastic gradient descent (SGD) using the mathematical framework described in the lecture notes \cite{lec_notes_fleuret} and in \cite{goodfellow2016deep}. 
+Moreover, we have implemented a forward and backward pass as well as the update of parameters using the stochastic gradient descent (SGD).
+For this part we followed the mathematical framework described in the lecture notes \cite{lec_notes_fleuret} and in \cite{goodfellow2016deep}. 
 
-This report is organised as follows: in Section \ref{sec_code} we describe the generalities of the implementation, explaining in particular the concept of dictionaries and ... 
-We test the network on and  present the numerical results in Section \ref{sec_numexp}.
+This report is organised as follows: in Section \ref{sec_code} we describe the generalities of the implementation, explaining in particular the concept of dictionaries used to define the operators and their connectivity map. 
+Then, in  Section \ref{sec_numexp}, we test the constructed network on a two-class classification problem both for a linearly separable dataset and a non-linearly separable one.
+Satisfactory results, i.e. from 0.5 to 2\% error, are achieved in both cases. 
 Conclusions and further remarks are presented in Section \ref{sec_conclusion}.
 
 \section{Code}\label{sec_code}
@@ -166,9 +168,35 @@ The general structure of a module object is given in \verb|ModuleBase.py| and in
 
 % Num 
 \section{Numerical Experiments}\label{sec_numexp}
-Initially, we tested a very simple network (i.e., with one unique linear layer) on a simple linear two-class classification problem, i.e., where the discriminant line that separates  points classified with label 0 or 1 is  linear. 
-As shown in Figure \ref{fig_lin_results}, even a very simple network of this kind can provide satisfactory results on unseen data.
-As expected, this does not generalise to more complex classification problems, where there discriminant lplane is non linear. 
+% simple model on linear data
+Before running the model presented in the previous section, we run few simpler ``sanity check'' tests.
+We first consider a simpler problem: a two-class classification problem where the discriminant line that separates  points classified with label 0 or 1 is  linear. 
+In particular, we sample  points from a standard Normal distribution and assign them a soft label 0.8 or 0.2 if they lie on the left or on the right of a line with intercept in the origin and slope equal 4. 
+To train this problem, we use a simple network where the operators and connectivity map are chosen as follows:
+\begin{align*}
+\text{operators} =  \{  & 1  \: :  \text{ Linear }, \\
+&  2  \: : [\text{ Nonlinear }], \\
+%   , 1  \: :  \text{ Linear3 } 
+ \}.\\ 
+\end{align*}
+In this model the first value $ \text{ Linear }$ has dimensions number of classes $\times$ number of inputs [TODO controlla qui... sono dimensioni ? è giusto?] and the second value  $\text{ Nonlinear }$ is given by the Tanh function.
+As shown in Figure \ref{fig_lin_results}, even a very simple network of this kind can provide satisfactory results on unseen data: 0.3\% error on the training dataset and 0.5\% error on the test set. 
+ %Fig2
+  \begin{figure}[h]
+ \begin{center}
+\begin{tabular}{l r}
+  \includegraphics[width=0.5\textwidth]{fig/fig_linear_simplemodel_03err_train} & 
+  \includegraphics[width=0.5\textwidth]{fig/fig_linear_simplemodel_05err_test} \\
+  \end{tabular}
+   \caption{Training (left) and test (right) sets for the first simple problem. The discriminant between the two classes is a line, points belonging to class 0 and 1 are marked in blue and red, respectively. Points misclassified are marked with a black x symbol.  \label{fig_lin_results}}
+  \end{center}
+  \end{figure}
+  % End of fig2
+  
+For this problem and all the following once we sampled 1000 points in the train set and 200 points in test set. 
+The learning rate is set equal to $0.05$ for all problems. 
+
+As expected, this simple model does not generalise to more complex classification problems, where there discriminant lplane is non linear. 
 This corresponds to the case we were asked to test: classify  randomly generated points  in $[0,1]^2$ with label 0 if they lie inside the circle of radius $\sqrt{2 \pi}^{-1}$ or 1 otherwise. 
 For this setup a network with logistic sigmoids or Tanh is needed to learn the non-linearities.
 Figure \ref{fig_circle} shows the results on an unseen test set.
