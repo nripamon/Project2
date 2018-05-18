@@ -23,11 +23,11 @@ Set the dimensions of the artificial train and test sets.
 """
 Initialize train and test sets
 """
-option_load = 0 # 0 for linear and 1 for circle and 2 for circle "projected" 
+option_load = 1 # 0 for linear and 1 for circle and 2 for circle "projected" 
 train_input, train_target, test_input, test_target, number_of_inputs, number_of_classes, nb_train_input, nb_test_input = init.initialize_dataset(option=option_load)
 
 
-option_model = 2 # Choose option_model = 0 for model required in project 2 and option_model = 1 for simplified model 
+option_model = 0 # Choose option_model = 0 for model required in project 2 and option_model = 1 for simplified model 
 if option_model == 0:
 
   """
@@ -70,22 +70,21 @@ if option_model == 0:
   input_operators = [ 1 ]
   output_operator = 5
 
+# elif option_model == 1: 
+
+#   Linear = M.Linear(number_of_classes,number_of_inputs)
+#   Nonlinear = M.Tanh()
+#   operators = OrderedDict({ 1 : Linear,
+#                            2 : Nonlinear })
+#   connectivity = OrderedDict({ 1 : [2] })
+#   input_operators = [ 1 ]
+#   output_operator = 2
+
 elif option_model == 1: 
 
   Linear = M.Linear(number_of_classes,number_of_inputs)
-  Nonlinear = M.Tanh()
-  operators = OrderedDict({ 1 : Linear,
-                           2 : Nonlinear })
-  connectivity = OrderedDict({ 1 : [2] })
-  input_operators = [ 1 ]
-  output_operator = 2
-
-elif option_model == 2: 
-
-  Linear = M.Linear(number_of_classes,number_of_inputs)
-  Nonlinear = M.Tanh()
   operators = OrderedDict({ 1 : Linear })
-  connectivity = OrderedDict({ 1 : [2] })
+  connectivity = OrderedDict({ 1 : [] })
   input_operators = [ 1 ]
   output_operator = 1
 
