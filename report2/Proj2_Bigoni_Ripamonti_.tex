@@ -70,23 +70,42 @@
 
 
 \section{Introduction}
+The goal of this project consists in designing a mini deep learning network frameworks ``by scratch''. 
+We have therefore built a network that combines fully connected layers, Tanh, the logistic sigmoid and ReLu. 
+Moreover, we have implemented a forward and backward pass as well as the update of parameters using the stochastic gradient descent (SGD) using the mathematical framework described in the lecture notes \cite{lec_notes_fleuret} and in \cite{goodfellow2016deep}. 
 
-\section{Code}
-The library handles the network structure by means of dictionaries, the ideal type to represent graphs in Python language . The generic dictionary that we have considered can be written as
+This report is organised as follows: in Section \ref{sec_code} we describe the generalities of the implementation, explaining in particular the concept of dictionaries and ... 
+We test the network on and  present the numerical results in Section \ref{sec_numexp}.
+Conclusions and further remarks are presented in Section \ref{sec_conclusion}.
+
+\section{Code}\label{sec_code}
+The library handles the network structure by means of dictionaries, the ideal type to represent graphs in Python language . 
+The generic dictionary considered for this project can be written as
 \begin{align*}
 \text{Dictionary} =  \{  & \text{ key}_1  \: : [ \text{ value}_{1,1},  \text{ value}_{1,2}, \dots] ,  \\
-&  \text{ key}_2  \: : [ \text{ value}_{2,1},  \text{ value}_{2,2},  \dots] , \} \\
+&  \text{ key}_2  \: : [ \text{ value}_{2,1},  \text{ value}_{2,2},  \dots] , \\
 & \dots \\
-& \text{ key}_N  \: : [ \text{ value}_{N,1},  \text{ value}_{N,2},  \dots] , \},
+& \text{ key}_N  \: : [ \text{ value}_{N,1},  \text{ value}_{N,2},  \dots]  \},
 \end{align*}
-where for each key we may have an arbitrary (and possibly different) number of values. We use the list constructor $[ \dots ]$ to gather all the values related to a certain key because lists are containers easily iterable and we need this feature as explained later on. \\
-The first dictionary that has to be defined by the user, called \verb|operators| in \verb|test.py|, is the one that records the modules used in the network. Let us consider a simple network, as the one represented in Figure \ref{example_graph}.
-The related dictionary is
+where for each key we may have an arbitrary (and possibly different) number of values. 
+We use the list constructor $[ \dots ]$ to gather all the values related to a certain key because lists are containers easily iterable and we need this feature as explained later on. \\
+The first dictionary that the user has to define is called \verb|operators| in \verb|test.py| and it records the modules used in the network. 
+For example, let us consider a simple network, as the one represented in Figure \ref{example_graph}.
+Its related dictionary is
 \begin{align*}
-\text{operators} =  \{  & 1  \: :  \text{ Linear1 }  , \: 2  \: : \text{ Nonlinear1 }   , \\
-&  3  \: :  \text{ Linear2 }   , \: 4  \: : \text{ Nonlinear2 }  , \} \\
-&   5  \: :  \text{ Sum }   , 1  \: :  \text{ Linear3 }  \}.\\ 
+\text{operators} =  \{  & 1  \: :  [\text{ Linear1 }], \\
+&  2  \: : [\text{ Nonlinear1 }], \\
+&  3  \: :  [\text{ Linear2 }], \\
+& 4  \: :  [\text{ Nonlinear2 }],  \\
+&  5  \: :  [\text{ Sum }]
+%   , 1  \: :  \text{ Linear3 } 
+ \}.\\ 
 \end{align*}
+%\begin{align*}
+%\text{operators} =  \{  & 1  \: :  \text{ Linear1 }  , \: 2  \: : \text{ Nonlinear1 }   , \\
+%&  3  \: :  \text{ Linear2 }   , \: 4  \: : \text{ Nonlinear2 }  , \} \\
+%&   5  \: :  \text{ Sum }   , 1  \: :  \text{ Linear3 }  \}.\\ 
+%\end{align*}
 The next step is the definition of a \verb|connectivity| dictionary: from this variable, an object of the class \verb|Network|, will generate two additional dictionaries, used to introduce and ordering in the forward pass. Since more than 
  \begin{figure}[h]
  \begin{center}
@@ -130,8 +149,11 @@ The next step is the definition of a \verb|connectivity| dictionary: from this v
 
 \subsection{General Network}
 
+
+% Modules
 \subsection{Modules}
-With the term \emph{module} we mean each possible element of the network from linear/nonlinear layers to the loss function. Moreover, other operators such as the sum of two different inputs are treated as modules, and hence we obtain an easier representation for more complex networks 3 .
+With the term \emph{module} we mean each possible element of the network from linear or nonlinear layers to the loss function. 
+Moreover, other operators such as the sum of two different inputs are treated as modules, and hence we obtain an easier representation for more complex networks 3 .
 The general structure of a module object is given in \verb|ModuleBase.py| and in each derived object we have to define the following methods:
 \begin{itemize}
 \item \verb|forward|: Implement the forward pass given the input of the module and store both the input and the output as attributes of the class. 
@@ -142,9 +164,16 @@ The general structure of a module object is given in \verb|ModuleBase.py| and in
 
 
 
+% Num 
+\section{Numerical Experiments}\label{sec_numexp}
+Initially, we tested a very simple network (i.e., with one unique linear layer) on a simple linear two-class classification problem, i.e., where the discriminant line that separates  points classified with label 0 or 1 is  linear. 
+As shown in Figure \ref{fig_lin_results}, even a very simple network of this kind can provide satisfactory results on unseen data.
+As expected, this does not generalise to more complex classification problems, where there discriminant lplane is non linear. 
+This corresponds to the case we were asked to test: classify  randomly generated points  in $[0,1]^2$ with label 0 if they lie inside the circle of radius $\sqrt{2 \pi}^{-1}$ or 1 otherwise. 
+For this setup a network with logistic sigmoids or Tanh is needed to learn the non-linearities.
+Figure \ref{fig_circle} shows the results on an unseen test set.
 
-\section{Numerical Experiments}
-
+% Conclusion
  \section{Conclusion}\label{sec_conclusion}
  
  
