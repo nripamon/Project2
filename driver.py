@@ -23,61 +23,70 @@ Set the dimensions of the artificial train and test sets.
 """
 Initialize train and test sets
 """
-option = 2 # 0 for linear and 1 for circle and 2 for circle "projected" 
-train_input, train_target, test_input, test_target, number_of_inputs, number_of_classes, nb_train_input, nb_test_input = init.initialize_dataset(option=option)
+option_load = 1 # 0 for linear and 1 for circle and 2 for circle "projected" 
+train_input, train_target, test_input, test_target, number_of_inputs, number_of_classes, nb_train_input, nb_test_input = init.initialize_dataset(option=option_load)
 
 
-"""
-Create List of Modules.
-This list is then given as input to the constructor of the NN.
-A loss function has to be provided separately.
-"""
-hidden_layer_1, hidden_layer_2, hidden_layer_3 = 30, 30, 30
-# 1) Define the modules that are used in the network.
-#.   N.B. Each operator that we are goind to use in the network is
-#.   considered as a module and hence has to be defined.
-Linear_1 = M.Linear(hidden_layer_1,number_of_inputs)
-Nonlinear_1 = M.Tanh()
-Linear_2 = M.Linear(hidden_layer_2,hidden_layer_1)
-Nonlinear_2 = M.Tanh()
-Linear_3 = M.Linear(number_of_classes,hidden_layer_2)
-# 2) The modules are collected in dictionary.
-operators = OrderedDict({ 1 : Linear_1,
-                          2 : Nonlinear_1,
-                          3 : Linear_2,
-                          4 : Nonlinear_2,
-                          5 : Linear_3 })
-# 3) Define a dictionary representing the relations between
-#.   modules. In this case we have the very simple structure:
-#.        input --> Linear_1 --> Nonlinear_1 --> output
-#    In the dictionary, for each module that do not produce the
-#.   output, we must provide, in form of list, the set of connected 
-#.   modules. 
-#.   N.B. The values must be given in form of a list: the reason 
-#.   behind this constraint is that other containers are not 
-#    easily iterable.
-connectivity = OrderedDict({ 1 : [2],
-                             2 : [3],
-                             3 : [4],
-                             4 : [5]})
-# 4) We specify the dictionary keys corresponding to the (possibly)
-#.   multiple inputs and the output of the network.
-#.   TODO: write a function that, given a dictionary, understand 
-#.   automatically the positions of inputs and outputs.
-input_operators = [ 1 ]
-output_operator = 5
+option_model = 0 # Choose option_model = 0 for model required in project 2 and option_model = 1 for simplified model 
+if option_model == 0:
 
+  """
+  Create List of Modules.
+  This list is then given as input to the constructor of the NN.
+  A loss function has to be provided separately.
+  """
+  hidden_layer_1, hidden_layer_2, hidden_layer_3 = 30, 30, 30
+  # 1) Define the modules that are used in the network.
+  #.   N.B. Each operator that we are goind to use in the network is
+  #.   considered as a module and hence has to be defined.
+  Linear_1 = M.Linear(hidden_layer_1,number_of_inputs)
+  Nonlinear_1 = M.Tanh()
+  Linear_2 = M.Linear(hidden_layer_2,hidden_layer_1)
+  Nonlinear_2 = M.Tanh()
+  Linear_3 = M.Linear(number_of_classes,hidden_layer_2)
+  # 2) The modules are collected in dictionary.
+  operators = OrderedDict({ 1 : Linear_1,
+                            2 : Nonlinear_1,
+                            3 : Linear_2,
+                            4 : Nonlinear_2,
+                            5 : Linear_3 })
+  # 3) Define a dictionary representing the relations between
+  #.   modules. In this case we have the very simple structure:
+  #.        input --> Linear_1 --> Nonlinear_1 --> output
+  #    In the dictionary, for each module that do not produce the
+  #.   output, we must provide, in form of list, the set of connected 
+  #.   modules. 
+  #.   N.B. The values must be given in form of a list: the reason 
+  #.   behind this constraint is that other containers are not 
+  #    easily iterable.
+  connectivity = OrderedDict({ 1 : [2],
+                               2 : [3],
+                               3 : [4],
+                               4 : [5]})
+  # 4) We specify the dictionary keys corresponding to the (possibly)
+  #.   multiple inputs and the output of the network.
+  #.   TODO: write a function that, given a dictionary, understand 
+  #.   automatically the positions of inputs and outputs.
+  input_operators = [ 1 ]
+  output_operator = 5
 
+# elif option_model == 1: 
 
-# hidden_layer_1 = 20
-# hidden_1 = 40
-# Linear_1 = M.Linear(number_of_classes,number_of_inputs)
-# Nonlinear_1 = M.Tanh()
-# operators = OrderedDict({ 1 : Linear_1,
-#                          2 : Nonlinear_1 })
-# connectivity = OrderedDict({ 1 : [2] })
-# input_operators = [ 1 ]
-# output_operator = 2
+#   Linear = M.Linear(number_of_classes,number_of_inputs)
+#   Nonlinear = M.Tanh()
+#   operators = OrderedDict({ 1 : Linear,
+#                            2 : Nonlinear })
+#   connectivity = OrderedDict({ 1 : [2] })
+#   input_operators = [ 1 ]
+#   output_operator = 2
+
+elif option_model == 1: 
+
+  Linear = M.Linear(number_of_classes,number_of_inputs)
+  operators = OrderedDict({ 1 : Linear })
+  connectivity = OrderedDict({ 1 : [] })
+  input_operators = [ 1 ]
+  output_operator = 1
 
 
 
@@ -159,7 +168,7 @@ for k in range(0, nb_epochs):
                   (100 * nb_train_errors) / nb_train_input,
                   (100 * nb_test_errors) / nb_test_input))
 
-init.plot_results(option=option,
+init.plot_results(option=option_load,
                   nb_train_input=nb_train_input,
                   train_input=train_input, 
                   train_target=train_target, 

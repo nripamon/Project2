@@ -272,6 +272,9 @@ To train this problem, we use a very simple network where the operators and conn
 %%&  2  \: : [\text{ Nonlinear }], \\
 % \}.\\ 
 %\end{align*}
+
+We also need to specify the input operator as $[1]$ and the output operator equal to 1. 
+In this model the first value $ \text{ Linear }$ has dimensions number of classes $\times$ number of inputs.
 As shown in Figure \ref{fig_lin_results}, even a very simple network of this kind can provide satisfactory results on unseen data: 0.3\% error on the training dataset and 0.5\% error on the test set. 
  %Fig2
   \begin{figure}[h]
@@ -307,7 +310,7 @@ All the points close to circle, the discriminant border, are misclassified (blac
   % End of fig2
   
 It seems evident that for this setup a network with more capacity and nonlinear activation functions is needed to increase the accuracy.
-After this preliminary set, we are ready to test the performance of  the model described in the assignement, characterized by 3 hidden layers of dimension 25. See Figure \ref{fig_circle_good} for qualitatively results on training and test sets.
+After this preliminary set, we are ready to test the performance of  the model described in the assignment, characterized by 3 hidden layers of dimension 25. See Figure \ref{fig_circle_good} for qualitatively results on training and test sets.
 Here we obtain 0.5\% error on the training set and 0\% error on the test set.
 These results are very satisfying and confirm the well behaviour of the model we implemented. 
    %Fig3
